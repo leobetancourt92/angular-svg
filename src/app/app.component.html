@@ -1,0 +1,76 @@
+<div class="main-page">
+  <div class="flip-icon" (click)="flipBox()"></div>
+
+  <div class="img-section">
+    <svg-icon [src]="switchImgUrl" #svgImg></svg-icon>
+  </div>
+
+  <pre *ngIf="isFrontPage">{{selectedInterfaceData | json}}</pre>
+  <pre *ngIf="!isFrontPage">{{selectedRearItemData | json}}</pre>
+</div>
+
+<div id="device_image" [ngStyle]="{
+  'left.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.left,
+  'top.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.top,
+  'width.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.width,
+  'height.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.height,
+  'visibility': deviceImagePositionInfo == undefined ? 'hidden' : 'visible',
+  'transform': isFrontPage == false ? 'rotate(180deg)' : 'rotate(0deg)'
+}">
+  <img src="assets/Cisco-01.png" alt="cisco">
+</div>
+
+<div id="canvas" 
+    *ngIf="isFrontPage"
+    [ngStyle]="{
+      'left.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.left,
+      'top.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.top,
+      'width.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.width,
+      'height.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.height,
+      'visibility': canvasPositionInfo == undefined ? 'hidden' : 'visible'
+    }">
+  <div 
+    *ngFor="let interface of interfacesData" 
+    class="icon-interface" 
+    [ngStyle]="{
+      'left.px': interface.positionX,
+      'top.px': interface.positionY,
+      'width.px': interface.widthPixel,
+      'transform': interface.orientation === 'up' && 'rotate(180deg)',
+      'box-shadow': (selectedInterfaceData && selectedInterfaceData.status.shortName === interface.name) ? '0 0 3px 1px #fff inset' : 'none'
+    }"
+    (click)="getDetailedInterfaceData(interface.name)"
+    [title]=interface.shortName
+  >
+    <img [src]="interface.backgroundImgUrl" alt="port" class="port-image" [ngClass]="{
+      'filter-red': interface.detail.status.operationalStatus == 'down',
+      'filter-green': interface.detail.status.operationalStatus == 'up'
+    }">
+  </div>
+</div>
+<div id="canvas" 
+    *ngIf="!isFrontPage" 
+    [ngStyle]="{
+      'left.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.left,
+      'top.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.top,
+      'width.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.width,
+      'height.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.height,
+      'visibility': canvasPositionInfo == undefined ? 'hidden' : 'visible'
+  }">
+  <div 
+    *ngFor="let item of rearData" 
+    class="icon-rear" 
+    [ngStyle]="{
+      'left.px': item.positionX,
+      'top.px': item.positionY,
+      'width.px': item.widthPixel,
+      'height.px': item.heightPixel
+    }"
+    
+    [title]=item.shortName
+  >
+    <img *ngIf="item.name !== 'ManagementConsole'" [src]="item.backgroundImgUrl" class="rear-item-image" (click)="getDetailedRearItemData(item)" [ngStyle]="{
+      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortName === item.name) ? '0 0 3px 1px #fff' : 'none'
+    }">
+  </div>
+</div>
