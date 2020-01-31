@@ -17,7 +17,8 @@
   'visibility': deviceImagePositionInfo == undefined ? 'hidden' : 'visible',
   'transform': isFrontPage == false ? 'rotate(180deg)' : 'rotate(0deg)'
 }">
-  <img src="assets/Cisco-01.png" alt="cisco">
+  <!-- <img src="assets/Cisco-01.png" alt="cisco"> -->
+  <p>{{deviceTitle | uppercase}}</p>
 </div>
 
 <div id="canvas" 
@@ -36,16 +37,32 @@
       'left.px': interface.positionX,
       'top.px': interface.positionY,
       'width.px': interface.widthPixel,
-      'transform': interface.orientation === 'up' && 'rotate(180deg)',
+      'height.px': interface.heightPixel,
       'box-shadow': (selectedInterfaceData && selectedInterfaceData.status.shortName === interface.name) ? '0 0 3px 1px #fff inset' : 'none'
     }"
     (click)="getDetailedInterfaceData(interface.name)"
     [title]=interface.shortName
   >
-    <img [src]="interface.backgroundImgUrl" alt="port" class="port-image" [ngClass]="{
-      'filter-red': interface.detail.status.operationalStatus == 'down',
-      'filter-green': interface.detail.status.operationalStatus == 'up'
-    }">
+    <p *ngIf="interface.orientation === 'up'"
+      [ngStyle]="{
+        'margin-bottom': '-8px'
+      }"
+      >{{interface.frontpanelNum}}
+    </p>
+    <img [src]="interface.backgroundImgUrl" alt="port" class="port-image"
+      [ngClass]="{
+        'filter-red': interface.detail.status.operationalStatus == 'down',
+        'filter-green': interface.detail.status.operationalStatus == 'up'
+      }"
+      [ngStyle]="{
+        'transform': interface.orientation === 'up' && 'rotate(180deg)'
+      }">
+    <p *ngIf="interface.orientation !== 'up'"
+      [ngStyle]="{
+        'margin-top': '-8px'
+      }"
+      >{{interface.frontpanelNum}}
+    </p>
   </div>
 </div>
 <div id="canvas" 

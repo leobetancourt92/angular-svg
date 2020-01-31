@@ -8,7 +8,7 @@ const DEVICE_NAME = 'cisco5';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  @ViewChild('svgImg', { static: false })  
+  @ViewChild('svgImg', { static: false })
   svgImg: any;
   title = 'angular-svg-project';
 
@@ -23,29 +23,33 @@ export class AppComponent implements OnInit {
   rearData: Array<any> = [];
   selectedInterfaceData: any;
   selectedRearItemData: any;
+  deviceTitle: any;
 
   isFrontPage = true;
 
-  constructor(private renderer: Renderer2, private dataService: DataApiService) {}
+  constructor(private renderer: Renderer2, private dataService: DataApiService) { }
 
   async ngOnInit() {
     const deviceName = 'cisco5';
     const { status: { vendor }, status: { model } } = await this.dataService.getDeviceData(deviceName).toPromise();
+    this.deviceTitle = `${vendor} ${model}`;
     const categoryName = `${vendor}__${model}`;
     const categoryData = await this.dataService.getUICatalogData(categoryName).toPromise();
     this.switchImgUrl = `assets/${categoryData.status.ui_info.device_image}`;
-    const detailedInterfaceData = await Promise.all(categoryData.status.ui_info.front.map(item => this.dataService.getInterfaceData(`${item.name.replace(/\//g, '_')}-${DEVICE_NAME}`).toPromise()));
+    const detailedInterfaceData = await Promise.all(categoryData.status.ui_info.front.map(
+      item => this.dataService.getInterfaceData(`${item.name.replace(/\//g, '_')}-${DEVICE_NAME}`).toPromise()
+    ));
 
     setTimeout(() => {
-      this.canvasPositionInfo  = document.getElementsByTagName('svg')[0].querySelector('rect').getBoundingClientRect();
+      this.canvasPositionInfo = document.getElementsByTagName('svg')[0].querySelector('rect').getBoundingClientRect();
       this.deviceImagePositionInfo = document.getElementsByTagName('svg')[0].querySelector('polygon').getBoundingClientRect();
       const UNIT_PIXEL_X = this.canvasPositionInfo.width / categoryData.status.ui_info.Dimensions.X;
       const UNIT_PIXEL_Y = this.canvasPositionInfo.height / categoryData.status.ui_info.Dimensions.Y;
-      
+
       this.interfacesData = categoryData.status.ui_info.front.map((item, index) => ({
-        positionX: item.x * UNIT_PIXEL_X,
+        positionX: item.x * UNIT_PIXEL_X + (item.x - 13) * 5,
         positionY: item.y * UNIT_PIXEL_Y,
-        widthPixel: item.width * UNIT_PIXEL_X,
+        widthPixel: item.width * UNIT_PIXEL_X + 12,
         heightPixel: item.height * UNIT_PIXEL_Y,
         backgroundImgUrl: `assets/${item.image}`,
         detail: detailedInterfaceData[index],
